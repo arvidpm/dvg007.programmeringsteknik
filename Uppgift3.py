@@ -2,14 +2,21 @@
 # Arvid Persson Moosavi
 # 2016-09-24
 #
-# Detta är ett program som skapar en dikt av en inläst text.
-# Programmet läser in fyra meningar och skriver sedan ut texten
-# uppdelad på följande rader:
+# Detta är inlämningsuppgiften Nöjesfält
+#
+# Programmet tar indata namn, längd vid start och använder dessa
+# för att kontrollera så användaren inte är för kort för attraktionen
+#
+# Klassen Visitor har en konstruktor för besökaren, denna används även om besökaren vill ändra sin längd
+# Klassen Attraction har konstruktor för attraktionerna, samt metoder för att starta/stoppa attraktionen
+#
 
-import random, sys, time
+import sys, time
+from random import randint
 
 
 class Visitor:
+
     # Konstruktor
     def __init__(self, name, height):
         self.name = name
@@ -35,31 +42,30 @@ class Attraction:
 
     def start(self):
         print()
-        if random.randrange(0,2) == 0:
+
+        # Slumpar haveri
+        if randint(0,2) == 0:
             print(self.name,":", self.broken)
             self.stop()
+            time.sleep(3)
         else:
-            self.dangerlevel()
+            # Skriver ut farlighetsnivå
+            if self.dangerlevel < 5:
+                print("Den här attraktionen är coollugn!")
+            elif self.dangerlevel < 8:
+                print("Den här attraktionen är lite farlig..")
+            else:
+                print("Säker på att du ska åka denna? Den är dödligt farlig!")
+            time.sleep(3)
+            print()
             print(self.scream)
+            print()
             self.stop()
+            time.sleep(3)
 
-
-
+    # Metod som stoppar attraktionen
     def stop(self):
-        print(self.name+": Attraktionen stannar...")
-
-
-    def dangerlevel(self):
-        if self.dangerlevel <= 4:
-            print("Den här attraktionen är coollugn!")
-        elif self.dangerlevel >4<=7 :
-            print("Den här attraktionen är lite farlig..")
-        elif self.dangerlevel >7:
-            print("Säker på att du ska åka denna? Den är dödligt farlig!")
-        time.sleep(3)
-
-
-
+        print(self.name,": Attraktionen stannar...")
 
 # Huvudprogrammet
 def main():
@@ -74,10 +80,10 @@ def main():
 
 
     # Attraktionsdata, här går det att lägga till mer data att slumpa från
-    attr_broken = [("Attraktionen gick sönder och behöver oljas, försök igen eller åk en annan!"),
-                        ("De anställda gästarbetarna är slut och behöver en rast, "
-                         "försök igen senare eller åk en annan!"),
-                        ("Den här är helt paj och behöver fixas, försök igen eller åk en annan!")]
+    attr_broken = ["Attraktionen gick sönder och behöver oljas, försök igen eller åk en annan!",
+                        "De anställda gästarbetarna är slut och behöver en rast, "
+                         "försök igen senare eller åk en annan!",
+                        "Den här är helt paj och behöver fixas, försök igen eller åk en annan!"]
 
     attr_scream = ["---------------------Attraktionen startar---------------------\n"
                     "---------------------WOOOHOOOOO!---------------------",
@@ -90,15 +96,23 @@ def main():
 
 
     # Skapar attraktionsobjekt, inparametrar (namn, minlängd, passagerarantal, farlighetsnivå, söndermeddelande, skrikmeddelande, reklammeddelande)
-    attractions = [ Attraction('Mountain Ride', 140, 20, 9, attr_broken[random.randrange(0,2)], attr_scream[random.randrange(0,1)], attr_commerical[random.randrange(0,2)]),
-                    Attraction('Fun House', 90, 40, 4, attr_broken[random.randrange(0,2)], attr_scream[random.randrange(0,1)], attr_commerical[random.randrange(0,2)]),
-                    Attraction('Radio Cars', 120, 30, 7, attr_broken[random.randrange(0,2)], attr_scream[random.randrange(0,1)], attr_commerical[random.randrange(0,2)])]
+    attractions = [ Attraction('Mountain Ride', 140, 20, 9, attr_broken[randint(0,2)], attr_scream[randint(0,1)], attr_commerical[randint(0,2)]),
+                    Attraction('Fun House', 90, 40, 4, attr_broken[randint(0,2)], attr_scream[randint(0,1)], attr_commerical[randint(0,2)]),
+                    Attraction('Radio Cars', 120, 30, 7, attr_broken[randint(0,2)], attr_scream[randint(0,1)], attr_commerical[randint(0,2)])]
 
+    # Gör reklam för vald attraktion och startar denna om användaren skriver "ja"
     def rideprep(ride):
-        print(attractions[ride].commercial)
-        choice = input("Starta? ja/nej: ")
-        if choice == "ja":
-            attractions[ride].start()
+
+        if int(visitor.height) < attractions[ride].height:
+            print("Du är för kort för attraktionen",attractions[ride].name,visitor.name)
+            print("Minsta längd är:",attractions[ride].height)
+            time.sleep(3)
+        else:
+            print(attractions[ride].name,"tar",attractions[ride].passengers,"passagerare")
+            print(attractions[ride].name,":",attractions[ride].commercial)
+            sure = input("Starta? ja/nej: ")
+            if sure == "ja":
+                attractions[ride].start()
 
 
     # Huvudmenyn
@@ -107,14 +121,18 @@ def main():
                    "\n9. Orkar inte mer, jag vill gå hem!\n\nGör ditt val: ")
 
     while choice:
+
         if choice[0] == "1":
-            rideprep(0)
+            ride = 0
+            rideprep(ride)
 
         elif choice[0] == "2":
-            rideprep(1)
+            ride = int(1)
+            rideprep(ride)
 
         elif choice[0] == "3":
-            rideprep(2)
+            ride = int(2)
+            rideprep(ride)
 
         elif choice[0] == "7":
             print("Du heter", visitor.name, "och du är", visitor.height, "cm lång :D")
@@ -139,5 +157,5 @@ def main():
                         "\n3. Radiobilarna\n\n7. Visa din information\n8. Ändra längd"
                         "\n9. Orkar inte mer, jag vill gå hem!\n\nGör ditt val: ")
 
-
+# Initierar huvudprogrammet
 main()
