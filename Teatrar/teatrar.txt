@@ -1,0 +1,3 @@
+Standard/1000/350/100/50
+Stora Teatern/1500/500/250/100
+Lilla Teatern/500/50/25/10
