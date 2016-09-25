@@ -14,8 +14,9 @@
 # Klassen Match simulerar en match mellan två spelare, och innehåller en funktion för att uppdatera resultatlistan
 #
 
-import sys, random, os.path
+import sys, os.path
 from itertools import islice
+from random import randint
 
 class Player:
     # Skapar en ny spelare
@@ -35,8 +36,20 @@ class Player:
 class Match:
 
     # En funktion som sköter matchförberedelser
-    def preparematch(self, player1, player2):
-        return
+    def playmatch(self, player1, player2):
+
+        p1, p2, i = 0, 0, 0
+
+        while i < 3:
+            if randint(0,1) == 0:
+                p1 =+1
+            else:
+                p2 =+1
+
+            i =+1
+
+        print(p1, p2)
+
 
     # En funktion som uppdaterar resultatlistan
     def resultlist(self, player1, player2):
@@ -55,31 +68,11 @@ def main():
     def checkfile(FILENAME):
 
         if os.path.isfile(FILENAME):
-
-            # Antalet rader som ska ignoreras från textfilen
-            PLAYER_INFORMATION = 5
-
-            # Kollar antalet rader i filen
-            num_lines = file_len(FILENAME)
-
-            player_lines = (num_lines - PLAYER_INFORMATION) / 4
-
-            # Skapar array med antalet spelare från filen (4 rader per spelare)
-            players = [player_lines]
-
-            with open(FILENAME) as fin:
-                for line in islice(fin, 5, num_lines):
-
-                    players.append(line)
-                    print (players)
-
-                fin.close()
-
+            return
         else:
             sys.exit("Spelarlista.txt kunde inte hämtas")
 
-
-
+    # Funktion som kontrollerar antalet rader i textfilen
     def file_len(FILENAME):
         with open(FILENAME) as f:
             for i, l in enumerate(f):
@@ -90,21 +83,48 @@ def main():
     # En funktion som läser indata från FILENAME och sedan skapar objekt av Player
     def playerdata(FILENAME):
 
-        return
+        # Kollar antalet rader i filen
+        num_lines = file_len(FILENAME)
 
-        # Whileloopa igenom FILENAME och skapa spelarobjekt baserat på indatan
-        # player = Player[indata1, indata2, indata3, indata4]
+        # Skapar array med all data från spelarna
+        data = []
+
+        with open(FILENAME) as fin:
+            for line in islice(fin, 5, num_lines):
+
+                data.append(line[:-1])
+
+            fin.close()
+            return data
+
+    def createplayers(playerdata, FILENAME):
+
+        num_lines = file_len(FILENAME)
+        playercount = num_lines / 4
 
 
     FILENAME = 'Spelarlista.txt'
-    # match = Match(FILENAME)
 
-    # Meny för val av händelser
-    # choice = '';
-    # while choice != 'S':
-    #       Välj två spelare som ska gå en match
-    #       Match.preparematch(player1, player2)
 
     checkfile(FILENAME)
+    playerdata = playerdata(FILENAME)
+    print(playerdata)
+
+
+
+
+
+
+
+
+
+# Match.preparematch(player1, player2)
+# match = Match(FILENAME)
+
+# Meny för val av händelser
+# choice = '';
+# while choice != 'S':
+#       Välj två spelare som ska gå en match
+#
 
 main()
