@@ -32,24 +32,23 @@ class Player:
 
 
 
-
-
 # Klassen Match simulerar matcher som spelas och uppdaterar även resultatlistan samt Spelarlista.txt
 class Match:
 
     # En funktion som sköter matchförberedelser
     def playmatch(self, player1, player2):
 
+        p1, p2, i = 0, 0, 0
 
-        p1, p2 = 0, 0
-        result = randint(0, 1)
+        while i < 3:
+            if randint(0,1) == 0:
+                p1 =+1
+            else:
+                p2 =+1
 
-        if result == 1:
-            p1 = 1
-        else:
-            p2 = 1
+            i =+1
 
-        return (p1, p2)
+        print(p1, p2)
 
 
     # En funktion som uppdaterar resultatlistan
@@ -65,6 +64,14 @@ class Match:
 # Huvudprogram
 def main():
 
+    # Kontrollerar filens existens
+    def checkfile(FILENAME):
+
+        if os.path.isfile(FILENAME):
+            return
+        else:
+            sys.exit("Spelarlista.txt kunde inte hämtas")
+
     # Funktion som kontrollerar antalet rader i textfilen
     def file_len(FILENAME):
         with open(FILENAME) as f:
@@ -74,8 +81,9 @@ def main():
 
 
     # En funktion som läser indata från FILENAME och sedan skapar objekt av Player
-    def createplayers(playerdata, FILENAME):
+    def playerdata(FILENAME):
 
+        # Kollar antalet rader i filen
         num_lines = file_len(FILENAME)
 
         # Skapar array med all data från spelarna
@@ -89,10 +97,24 @@ def main():
             fin.close()
             return data
 
+    def createplayers(playerdata, FILENAME):
+
+        num_lines = file_len(FILENAME)
+        playercount = num_lines / 4
 
 
-    # Refererar textfil till konstant
     FILENAME = 'Spelarlista.txt'
+
+
+    checkfile(FILENAME)
+    playerdata = playerdata(FILENAME)
+    print(playerdata)
+
+
+
+
+
+
 
 
 
