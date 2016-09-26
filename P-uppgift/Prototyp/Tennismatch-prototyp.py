@@ -28,9 +28,9 @@ class Player:
         self.played = m_played
         self.averagewon = average_won
 
-    # Returnerar spelaren med attribut
+    # Returnerar spelaren med attribut, samt formaterar för resultatlista
     def __str__(self):
-        return self.name
+        return '    {:15} {:>1} {:>8}   {}'.format(self.name, self.won, self.played, self.averagewon)
 
 
 
@@ -53,14 +53,13 @@ def createplayers(FILENAME):
     # Skapar array med all data från spelarna
     v = []
 
-    with open(FILENAME) as file:
+    with open(FILENAME, encoding="utf-8") as file:
 
         # Loopar igenom data från rad 5 till slutet
         for line in islice(file, 5, num_lines):
 
-            v.append(line[:-1])
-
-        file.close()
+            line = line.replace('\n', '')
+            v.append(line)
 
         p1avg = round(( int(v[2]) / int(v[3]) ), 3)
         p2avg = round(( int(v[6]) / int(v[7]) ), 3)
@@ -73,6 +72,8 @@ def createplayers(FILENAME):
                 Player(v[12], v[13], v[14], v[15], p4avg) ]
 
         return player
+
+
 
 # En funktion som sköter matchförberedelser
 def playmatch(player1, player2):
@@ -98,21 +99,17 @@ def save(self, player1, player2, FILENAME):
 
 # --------- Funktioner för gränssnitt -------------
 
-def skrivlistan(player):
-    for i in player:
-        print(i, end=" ")
-    print("\n")
-
 
 def print_resultlist(player):
 
-    player.sort(key=lambda player: player.averagewon)
+    player.sort(key=lambda player: player.averagewon, reverse=True)
 
-    skrivlistan(player)
+    plac = 1
+    print("Plac. Namn        Vunna  Spelade  %vunna")
 
-
-    #print('Plac.    Namn    Vunna   Spelade    %vunna')
-    #print('1', player1.name, player1.won, player1.played, (player1.won/player1.played))
+    for i in player:
+        print(plac, i)
+        plac +=1
 
 
 # Skriver ut valmenyn. Lånade denna från exemplet då den var snyggare än min
@@ -123,6 +120,7 @@ def print_menu():
     print ('4  Återlämna bok.')
     print ('6  Sluta.')
 
+
 # Huvudprogram
 def main():
 
@@ -132,16 +130,8 @@ def main():
     # Skapar spelarobjekt
     player = createplayers(FILENAME)
 
+    # Presenterar resultat
     print_resultlist(player)
-
-
-
-
-
-
-
-    # player[0], player[1] = playmatch(player[0], player[1])
-
 
 
 # Match.preparematch(player1, player2)

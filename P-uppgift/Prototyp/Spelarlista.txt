@@ -7,7 +7,7 @@ B Borg
 0.85
 5
 7
-J Nilsson
+J Näslund
 0.12
 4
 9
@@ -17,5 +17,5 @@ A Helgesson
 9
 B Sundman
 0.33
-6
+7
 6
