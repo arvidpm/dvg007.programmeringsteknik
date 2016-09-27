@@ -45,7 +45,7 @@ def file_len(FILENAME):
 
 
 # En funktion som läser indata från FILENAME och sedan skapar objekt av Player
-def createplayers(FILENAME):
+def createplayers(FILENAME, FIRSTLINES):
 
     # Kontrollerar antalet rader i FILENAME
     num_lines = file_len(FILENAME)
@@ -56,10 +56,88 @@ def createplayers(FILENAME):
     with open(FILENAME, encoding="utf-8") as file:
 
         # Loopar igenom data från rad 5 till slutet
-        for line in islice(file, 5, num_lines):
+        for line in islice(file, FIRSTLINES, num_lines):
 
             line = line.replace('\n', '')
             v.append(line)
+
+
+        p1avg = round(( int(v[2]) / int(v[3]) ), 3)
+        p2avg = round(( int(v[6]) / int(v[7]) ), 3)
+        p3avg = round(( int(v[10]) / int(v[11]) ), 3)
+        p4avg = round(( int(v[14]) / int(v[15]) ), 3)
+
+        player= [ Player(v[0], v[1], v[2], v[3], p1avg),
+                Player(v[4], v[5], v[6], v[7], p2avg),
+                Player(v[8], v[9], v[10], v[11], p3avg),
+                Player(v[12], v[13], v[14], v[15], p4avg) ]
+
+        return player
+
+
+# En funktion som simulerar en match mellan två valda spelare
+def playmatch(player1, player2, FILENAME, FIRSTLINES, player):
+
+    player1.played = int(player1.played)+1
+    player2.played = int(player2.played)+1
+
+
+    result = randint(0, 1)
+
+    if result == 0:
+        player1.won = int(player1.won)+1
+        print(player1.name, "won!")
+    else:
+        player2.won = int(player2.won)+1
+        print(player2.name, "won!")
+
+    player1.averagewon = int(player1.won) / int(player1.played)
+    player2.averagewon = int(player2.won) / int(player2.played)
+
+    print("--------------------------------------------\n")
+
+    save(FILENAME, FIRSTLINES, player)
+
+
+# En funktion som sparar ny data till Spelarlista.txt
+def save(FILENAME, FIRSTLINES, player):
+    # Kontrollerar antalet rader i FILENAME
+    num_lines = file_len(FILENAME)
+
+    # Raderar befintlig data, lämnar filen öppen
+    oldlines = open(FILENAME).readlines()
+    open(FILENAME, 'w').writelines(oldlines[:-(num_lines - FIRSTLINES)])
+
+    # Skriver ny data
+
+    for i in player:
+        with open(FILENAME, "a", encoding='utf-8') as file:
+            file.write(str(i.name) + '\n')
+            file.write(str(i.serveavg) + '\n')
+            file.write(str(i.won) + '\n')
+            file.write(str(i.played) + '\n')
+
+
+def testfunction(FILENAME, FIRSTLINES):
+
+    # Kontrollerar antalet rader i FILENAME
+    num_lines = file_len(FILENAME)
+
+    # Antal spelare
+    count = (num_lines - FIRSTLINES)/4
+
+    # Skapar array med all data från spelarna
+    v = [count]
+
+    with open(FILENAME, encoding="utf-8") as file:
+
+        # Loopar igenom data från rad 5 till slutet
+        for line in islice(file, FIRSTLINES, num_lines):
+
+            line = line.replace('\n', '')
+            v.append(line)
+
+
 
         p1avg = round(( int(v[2]) / int(v[3]) ), 3)
         p2avg = round(( int(v[6]) / int(v[7]) ), 3)
@@ -75,72 +153,82 @@ def createplayers(FILENAME):
 
 
 
-# En funktion som sköter matchförberedelser
-def playmatch(player1, player2):
-
-    print(player1.won)
-    print(player2.won)
-
-    result = randint(0, 1)
-
-    if result == 0:
-        player1.won += 1
-    else:
-        player2.won += 1
-
-    return player1, player2
-
-
-# En funktion som sparar ny data till Spelarlista.txt
-def save(self, player1, player2, FILENAME):
-    return
-
-
-
 # --------- Funktioner för gränssnitt -------------
-
 
 def print_resultlist(player):
 
     player.sort(key=lambda player: player.averagewon, reverse=True)
 
     plac = 1
+    print("\n----------------------------------------")
     print("Plac. Namn        Vunna  Spelade  %vunna")
 
     for i in player:
         print(plac, i)
         plac +=1
+    print("----------------------------------------\n")
 
 
-# Skriver ut valmenyn. Lånade denna från exemplet då den var snyggare än min
-def print_menu():
-    print ('1  söka på Titel.')
-    print ('2  söka på Författare.')
-    print ('3  Låna bok.')
-    print ('4  Återlämna bok.')
-    print ('6  Sluta.')
+def print_playerlist(player):
+
+    plac = 0
+    print("\n----------------------------------------")
+    print("Nr. Namn")
+
+    for i in player:
+        print(plac," ",i.name)
+        plac += 1
 
 
-# Huvudprogram
+
+# --------- Huvudprogrammet -----------------------
+
 def main():
 
+    # Första raderna i textfilen ignoreras
+    FIRSTLINES = 5
+
     # Refererar textfil till konstant
-    FILENAME = 'Spelarlista.txt'
+    FILENAME = '../resources/Spelarlista.txt'
 
-    # Skapar spelarobjekt
-    player = createplayers(FILENAME)
-
-    # Presenterar resultat
-    print_resultlist(player)
+    # Skapar spelarobjekt från data i textfilen
+    player = createplayers(FILENAME, FIRSTLINES)
 
 
-# Match.preparematch(player1, player2)
-# match = Match(FILENAME)
+    # --------- Huvudmenyn -----------------------
+    choice = input("\nVälkommen!\n\n1. Spela match\n2. Visa spelare\n3. Visa resultat\n\n5. Avsluta\n\nGör ditt val: ")
 
-# Meny för val av händelser
-# choice = '';
-# while choice != 'S':
-#       Välj två spelare som ska gå en match
-#
+    while choice:
+
+        if choice[0] == "1":
+            print_playerlist(player)
+            print("\n")
+
+            a = int(input("Välj spelare nr 1: "))
+            b = int(input("Välj spelare nr 2: "))
+            if a == b:
+                print("En spelare kan inte spela mot sig själv!")
+            else:
+                print("\n"+player[a].name,"vs",player[b].name,"!\n")
+                print("--------------------------------------------\n")
+                playmatch(player[a], player[b], FILENAME, FIRSTLINES, player)
+
+        elif choice[0] == "2":
+            print_playerlist(player)
+
+        elif choice[0] == "3":
+            print_resultlist(player)
+
+        elif choice[0] == "5":
+            print("Hejdå!")
+            sys.exit()
+
+        else:
+            print("\nNågot blev fel!\n")
+
+        print()
+
+        choice = input("\n1. Spela match\n2. Visa spelare\n3. Visa resultat\n\n5. Avsluta\n\nGör ditt val: ")
+
 
 main()
