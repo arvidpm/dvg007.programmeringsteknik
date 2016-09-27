@@ -50,8 +50,15 @@ def createplayers(FILENAME, FIRSTLINES):
     # Kontrollerar antalet rader i FILENAME
     num_lines = file_len(FILENAME)
 
+    player_count = int( (num_lines-FIRSTLINES) / 4)
+
+    p = 0
+    s = 0
+
     # Skapar array med all data från spelarna
-    v = []
+    v1 = [None] * player_count
+    v2 = [None] * 4
+
 
     with open(FILENAME, encoding="utf-8") as file:
 
@@ -59,20 +66,24 @@ def createplayers(FILENAME, FIRSTLINES):
         for line in islice(file, FIRSTLINES, num_lines):
 
             line = line.replace('\n', '')
-            v.append(line)
 
+            if p < 3:
 
-        p1avg = round(( int(v[2]) / int(v[3]) ), 3)
-        p2avg = round(( int(v[6]) / int(v[7]) ), 3)
-        p3avg = round(( int(v[10]) / int(v[11]) ), 3)
-        p4avg = round(( int(v[14]) / int(v[15]) ), 3)
+                v2[p] = line
+                p += 1
 
-        player= [ Player(v[0], v[1], v[2], v[3], p1avg),
-                Player(v[4], v[5], v[6], v[7], p2avg),
-                Player(v[8], v[9], v[10], v[11], p3avg),
-                Player(v[12], v[13], v[14], v[15], p4avg) ]
+            elif p == 3:
 
-        return player
+                v2[p] = line
+
+                avg = round(( int(v2[2]) / int(v2[3]) ), 3)
+
+                v1[s] = Player(v2[0], v2[1], v2[2], v2[3], avg)
+
+                p = 0
+                s += 1
+
+        return v1
 
 
 # En funktion som simulerar en match mellan två valda spelare
@@ -91,8 +102,8 @@ def playmatch(player1, player2, FILENAME, FIRSTLINES, player):
         player2.won = int(player2.won)+1
         print(player2.name, "won!")
 
-    player1.averagewon = int(player1.won) / int(player1.played)
-    player2.averagewon = int(player2.won) / int(player2.played)
+    player1.averagewon = round( (int(player1.won) / int(player1.played)), 3)
+    player2.averagewon = round( (int(player2.won) / int(player2.played)), 3)
 
     print("--------------------------------------------\n")
 
@@ -118,38 +129,6 @@ def save(FILENAME, FIRSTLINES, player):
             file.write(str(i.played) + '\n')
 
 
-def testfunction(FILENAME, FIRSTLINES):
-
-    # Kontrollerar antalet rader i FILENAME
-    num_lines = file_len(FILENAME)
-
-    # Antal spelare
-    count = (num_lines - FIRSTLINES)/4
-
-    # Skapar array med all data från spelarna
-    v = [count]
-
-    with open(FILENAME, encoding="utf-8") as file:
-
-        # Loopar igenom data från rad 5 till slutet
-        for line in islice(file, FIRSTLINES, num_lines):
-
-            line = line.replace('\n', '')
-            v.append(line)
-
-
-
-        p1avg = round(( int(v[2]) / int(v[3]) ), 3)
-        p2avg = round(( int(v[6]) / int(v[7]) ), 3)
-        p3avg = round(( int(v[10]) / int(v[11]) ), 3)
-        p4avg = round(( int(v[14]) / int(v[15]) ), 3)
-
-        player= [ Player(v[0], v[1], v[2], v[3], p1avg),
-                Player(v[4], v[5], v[6], v[7], p2avg),
-                Player(v[8], v[9], v[10], v[11], p3avg),
-                Player(v[12], v[13], v[14], v[15], p4avg) ]
-
-        return player
 
 
 
