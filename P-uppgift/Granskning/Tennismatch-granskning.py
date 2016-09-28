@@ -1,10 +1,10 @@
 # # Programmeringsteknik webbkurs KTH inlämningsuppgift P-uppgift
-# Delmoment 2 - Prototyp
+# Delmoment 3 - Granskning
 #
 # Arvid Persson Moosavi
-# 2016-09-27
+# 2016-09-28
 #
-# Detta är deluppgiften prototyp från huvuduppgiften Tennismatch
+# Detta är deluppgiften granskning från huvuduppgiften Tennismatch
 #
 # Programmet fungerar i grova drag så att den läser indata från textfilen Spelarlista.txt
 # I prototypuppgiften kollas inte filen, varken dess existens eller rimlig data.
@@ -49,6 +49,18 @@ def checkfile(FILENAME):
         print(FILENAME, "laddad!")
     else:
         sys.exit("Spelarlista.txt kunde inte hämtas")
+
+
+def check_player_data(player):
+
+    for i in player:
+
+        if int(i.won) > int(i.played):
+            print("Antalet vunna matcher ("+i.won+") för spelare",i.name,"kan inte vara fler än antalet spelade ("+i.played+") !")
+            sys.exit("Programmet avslutas.")
+        elif float(i.serveavg) > float(1):
+            print("Vunnen serve ("+i.serveavg+") för",i.name,"kan inte vara större än 1!")
+            sys.exit("Programmet avslutas.")
 
 
 # Funktion som kontrollerar antalet rader i textfilen
@@ -198,6 +210,9 @@ def main():
 
     # Skapar spelarobjekt från data i textfilen
     player = createplayers(FILENAME, IGNORELINES)
+
+    # Kontrollerar rimlig spelardata
+    check_player_data(player)
 
 
     # --------- Huvudmenyn -----------------------
