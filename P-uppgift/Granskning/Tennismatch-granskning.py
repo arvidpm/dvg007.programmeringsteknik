@@ -39,18 +39,33 @@ class Player:
 
 
 
-#---------- Funktioner för filkontroll, skapande av spelare, matcher, resultatuppdatering ------------
 
+#---------- Funktioner för filkontroll ------------
 
 # Kontrollerar filens existens
 def checkfile(FILENAME):
 
     if os.path.isfile(FILENAME):
-        print(FILENAME, "laddad!")
+        print(FILENAME, "hittad!")
     else:
         sys.exit("Spelarlista.txt kunde inte hämtas")
 
 
+
+# Funktion för att kontrollerar så varje spelare har fyra rader i FILENAME
+def check_player_lines(IGNORELINES, LINES):
+
+    playerlines = LINES - IGNORELINES
+    print(playerlines)
+
+    if playerlines % 4 == 0:
+        return
+    else:
+        sys.exit("Antalet spelarrader går inte jämnt upp!")
+
+
+
+# Kontrollerar 1) att vunna matcher inte är fler än spelade, och 2) att vunnen serve inte är högre än 1.
 def check_player_data(player):
 
     for i in player:
@@ -63,6 +78,10 @@ def check_player_data(player):
             sys.exit("Programmet avslutas.")
 
 
+
+
+# ---------- Funktioner för skapande av spelare, matcher, resultatuppdatering, spara ny data till fil ------------
+
 # Funktion som kontrollerar antalet rader i textfilen
 def file_len(FILENAME):
     with open(FILENAME) as f:
@@ -72,12 +91,10 @@ def file_len(FILENAME):
 
 
 # En funktion som läser indata från FILENAME och sedan skapar objekt av Player
-def createplayers(FILENAME, IGNORELINES):
+def createplayers(FILENAME, IGNORELINES, LINES):
 
-    # Kontrollerar antalet rader i FILENAME
-    num_lines = file_len(FILENAME)
 
-    player_count = int( (num_lines-IGNORELINES) / 4)
+    player_count = int( (LINES-IGNORELINES) / 4)
 
     p = 0
     s = 0
@@ -90,7 +107,7 @@ def createplayers(FILENAME, IGNORELINES):
     with open(FILENAME, encoding="utf-8") as file:
 
         # Loopar igenom data från rad 5 till slutet av textfilen
-        for line in islice(file, IGNORELINES, num_lines):
+        for line in islice(file, IGNORELINES, LINES):
 
             # Tar bort radbyte
             line = line.replace('\n', '')
@@ -120,8 +137,28 @@ def createplayers(FILENAME, IGNORELINES):
         return v1
 
 
+
+# En funktion för att välja två spelare som skall spela mot varandra
+def selectplayers(FILENAME, IGNORELINES, LINES, player):
+
+    print_playerlist(player)
+    print()
+
+    a = int(input("Välj spelare nr 1: "))
+    b = int(input("Välj spelare nr 2: "))
+
+    if a == b:
+        print("En spelare kan inte spela mot sig själv!")
+
+    else:
+        print("\n" + player[a].name, "vs", player[b].name, "!\n")
+        print("--------------------------------------------\n")
+        playmatch(player[a], player[b], FILENAME, IGNORELINES, LINES, player)
+
+
+
 # En funktion som simulerar en match mellan två valda spelare
-def playmatch(player1, player2, FILENAME, IGNORELINES, player):
+def playmatch(player1, player2, FILENAME, IGNORELINES, LINES, player):
 
     player1.played = int(player1.played)+1
     player2.played = int(player2.played)+1
@@ -140,18 +177,16 @@ def playmatch(player1, player2, FILENAME, IGNORELINES, player):
 
     print("--------------------------------------------\n")
 
-    save(FILENAME, IGNORELINES, player)
+    save(FILENAME, IGNORELINES, LINES, player)
+
 
 
 # En funktion som raderar gammal och sparar ny data till Spelarlista.txt
-def save(FILENAME, IGNORELINES, player):
-
-    # Kontrollerar antalet rader i FILENAME
-    num_lines = file_len(FILENAME)
+def save(FILENAME, IGNORELINES, LINES, player):
 
     # Raderar befintlig data (totalt antal rader minus 5 första). Lämnar filen öppen
     oldlines = open(FILENAME).readlines()
-    open(FILENAME, 'w').writelines(oldlines[:-(num_lines - IGNORELINES)])
+    open(FILENAME, 'w').writelines(oldlines[:-(LINES - IGNORELINES)])
 
     # Skriver ny data
     for i in player:
@@ -197,44 +232,47 @@ def print_playerlist(player):
 
 def main():
 
-
-
     # Refererar textfil till konstant
     FILENAME = '../resources/Spelarlista.txt'
 
     # Kontrollerar att filen finns
     checkfile(FILENAME)
 
-    # Första raderna i textfilen ignoreras
+    # Konstant för att ignorera första raderna i FILENAME
     IGNORELINES = 5
 
+    # Kontrollerar antalet rader i FILENAME
+    LINES = file_len(FILENAME)
+
+    # Kontrollerar att varje spelare i FILENAME har fyra rader
+    check_player_lines(IGNORELINES, LINES)
+
     # Skapar spelarobjekt från data i textfilen
-    player = createplayers(FILENAME, IGNORELINES)
+    player = createplayers(FILENAME, IGNORELINES, LINES)
 
     # Kontrollerar rimlig spelardata
     check_player_data(player)
 
 
     # --------- Huvudmenyn -----------------------
-    choice = input("\nVälkommen till Tennisspelet!\n\n1. Spela match\n2. Visa spelare\n3. Visa resultat\n\n5. Avsluta\n\nGör ditt val: ")
+
+    print()
+    print('   ,odOO"bo,')
+    print(" ,dOOOP'dOOOb,")
+    print(",O3OP'dOO3OO33,")
+    print('P",ad33O333O3Ob')
+    print('?833O338333P",d')
+    print("`88383838P,d38'")
+    print(" `Y8888P,d88P'")
+    print('   `"?8,8P"'"")
+    print()
+
+    choice = input("Välkommen till Tennisspelet!\n\n1. Spela match\n2. Visa spelare\n3. Visa resultat\n\n5. Avsluta\n\nGör ditt val: ")
 
     while choice:
 
         if choice[0] == "1":
-
-            print_playerlist(player)
-            print("\n")
-
-            a = int(input("Välj spelare nr 1: "))
-            b = int(input("Välj spelare nr 2: "))
-
-            if a == b:
-                print("En spelare kan inte spela mot sig själv!")
-
-            else:
-                print("\n"+player[a].name,"vs",player[b].name,"!\n")
-                print("--------------------------------------------\n")
-                playmatch(player[a], player[b], FILENAME, IGNORELINES, player)
+            selectplayers(FILENAME, IGNORELINES, LINES, player)
 
         elif choice[0] == "2":
             print_playerlist(player)
