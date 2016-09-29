@@ -56,7 +56,6 @@ def checkfile(FILENAME):
 def check_player_lines(IGNORELINES, LINES):
 
     playerlines = LINES - IGNORELINES
-    print(playerlines)
 
     if playerlines % 4 == 0:
         return
@@ -88,6 +87,7 @@ def file_len(FILENAME):
         for i, l in enumerate(f):
             pass
     return i + 1
+
 
 
 # En funktion som läser indata från FILENAME och sedan skapar objekt av Player
@@ -216,6 +216,8 @@ def print_resultlist(player):
     print("----------------------------------------\n")
 
 
+
+
 def print_playerlist(player):
 
     plac = 0
@@ -225,6 +227,7 @@ def print_playerlist(player):
     for i in player:
         print(plac," ",i.name)
         plac += 1
+
 
 
 
