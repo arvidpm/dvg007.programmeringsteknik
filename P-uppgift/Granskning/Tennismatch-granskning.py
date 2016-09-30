@@ -19,7 +19,7 @@
 # 6. Laddas resultatlistan på nytt finns ny data tillgänglig sedan förra matchen.
 #
 
-import sys, os.path
+import sys, os.path, time
 from itertools import islice
 from random import randint
 
@@ -151,8 +151,15 @@ def selectplayers(FILENAME, IGNORELINES, LINES, player):
         print("En spelare kan inte spela mot sig själv!")
 
     else:
-        print("\n" + player[a].name, "vs", player[b].name, "!\n")
-        print("--------------------------------------------\n")
+        print("\n" + player[a].name)
+        time.sleep(0.5)
+        print("vs")
+        time.sleep(0.5)
+        print(player[b].name)
+        time.sleep(2)
+
+
+        print("--------------------------------------------")
         playmatch(player[a], player[b], FILENAME, IGNORELINES, LINES, player)
 
 
@@ -199,7 +206,6 @@ def save(FILENAME, IGNORELINES, LINES, player):
 
 
 
-
 # --------- Funktioner för gränssnitt -------------
 
 def print_resultlist(player):
@@ -213,7 +219,7 @@ def print_resultlist(player):
     for i in player:
         print(plac, i)
         plac +=1
-    print("----------------------------------------\n")
+    print("----------------------------------------")
 
 
 
@@ -227,6 +233,8 @@ def print_playerlist(player):
     for i in player:
         print(plac," ",i.name)
         plac += 1
+
+    print("----------------------------------------")
 
 
 
