@@ -57,8 +57,8 @@ def createplayers(FILENAME, IGNORELINES):
 
     player_count = int( (num_lines-IGNORELINES) / 4)
 
-    p = 0
-    s = 0
+    pelement = 0
+    pobject = 0
 
     # Skapar arrays för data. v1 för att hålla objekten och v2 för att hålla attributen
     v1 = [None] * player_count
@@ -73,26 +73,26 @@ def createplayers(FILENAME, IGNORELINES):
             # Tar bort radbyte
             line = line.replace('\n', '')
 
-            if p < 3:
+            if pelement < 3:
 
                 # Varje rad sparas till element i v2
-                v2[p] = line
-                p += 1
+                v2[pelement] = line
+                pelement += 1
 
-            elif p == 3:
+            elif pelement == 3:
 
                 # Sista spelarraden sparas till elementet i v2
-                v2[p] = line
+                v2[pelement] = line
 
                 # Beräknar snitt vunna matcher
                 avg = round(( int(v2[2]) / int(v2[3]) ), 3)
 
                 # Spelarobjekt skapas från datan till v1
-                v1[s] = Player(v2[0], v2[1], v2[2], v2[3], avg)
+                v1[pobject] = Player(v2[0], v2[1], v2[2], v2[3], avg)
 
                 # Nollställer p, ökar s för nästa objekt
-                p = 0
-                s += 1
+                pelement = 0
+                pobject += 1
 
         # Returnerar lista med spelarobjekt
         return v1
