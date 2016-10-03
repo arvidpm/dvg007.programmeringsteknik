@@ -144,23 +144,23 @@ def selectplayers(FILENAME, IGNORELINES, LINES, player):
     print_playerlist(player)
     print()
 
-    a = int(input("Välj spelare nr 1: "))
-    b = int(input("Välj spelare nr 2: "))
+    p1 = int(input("Välj spelare nr 1: "))
+    p2 = int(input("Välj spelare nr 2: "))
 
-    if a == b:
+    if p1 == p2:
         print("En spelare kan inte spela mot sig själv!")
 
     else:
-        print("\n" + player[a].name)
+        print("\n" + player[p1].name)
         time.sleep(0.5)
         print("vs")
         time.sleep(0.5)
-        print(player[b].name)
+        print(player[p2].name)
         time.sleep(2)
 
 
         print("--------------------------------------------")
-        playmatch(player[a], player[b], FILENAME, IGNORELINES, LINES, player)
+        playmatch(player[p1], player[p2], FILENAME, IGNORELINES, LINES, player)
 
 
 

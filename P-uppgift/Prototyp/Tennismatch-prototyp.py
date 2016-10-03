@@ -195,16 +195,16 @@ def main():
             print_playerlist(player)
             print("\n")
 
-            a = int(input("Välj spelare nr 1: "))
-            b = int(input("Välj spelare nr 2: "))
+            p1 = int(input("Välj spelare nr 1: "))
+            p2 = int(input("Välj spelare nr 2: "))
 
-            if a == b:
+            if p1 == p2:
                 print("En spelare kan inte spela mot sig själv!")
 
             else:
-                print("\n"+player[a].name,"vs",player[b].name,"!\n")
+                print("\n"+player[p1].name,"vs",player[p2].name,"!\n")
                 print("--------------------------------------------\n")
-                playmatch(player[a], player[b], FILENAME, IGNORELINES, player)
+                playmatch(player[p1], player[p2], FILENAME, IGNORELINES, player)
 
         elif choice[0] == "2":
             print_playerlist(player)
