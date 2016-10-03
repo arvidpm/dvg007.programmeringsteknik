@@ -43,10 +43,10 @@ class Player:
 
 # Funktion som kontrollerar antalet rader i textfilen
 def file_len(FILENAME):
-    with open(FILENAME) as f:
-        for i, l in enumerate(f):
+    with open(FILENAME) as file:
+        for index, item in enumerate(file):
             pass
-    return i + 1
+    return index + 1
 
 
 # En funktion som läser indata från FILENAME och sedan skapar objekt av Player

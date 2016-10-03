@@ -61,14 +61,14 @@ def check_player_lines(IGNORELINES, LINES):
 
 # Kontrollerar 1) att vunna matcher inte är fler än spelade, och 2) att vunnen serve inte är högre än 1.
 def check_player_data(player):
-    for i in player:
+    for pobject in player:
 
-        if int(i.won) > int(i.played):
-            print("Antalet vunna matcher (" + i.won + ") för spelare", i.name,
-                  "kan inte vara fler än antalet spelade (" + i.played + ") !")
+        if int(pobject.won) > int(pobject.played):
+            print("Antalet vunna matcher (" + pobject.won + ") för spelare", pobject.name,
+                  "kan inte vara fler än antalet spelade (" + pobject.played + ") !")
             sys.exit("Programmet avslutas.")
-        elif float(i.serveavg) > float(1):
-            print("Vunnen serve (" + i.serveavg + ") för", i.name, "kan inte vara större än 1!")
+        elif float(pobject.serveavg) > float(1):
+            print("Vunnen serve (" + pobject.serveavg + ") för", pobject.name, "kan inte vara större än 1!")
             sys.exit("Programmet avslutas.")
 
 
@@ -76,10 +76,10 @@ def check_player_data(player):
 
 # Funktion som kontrollerar antalet rader i textfilen
 def file_len(FILENAME):
-    with open(FILENAME) as f:
-        for i, l in enumerate(f):
+    with open(FILENAME) as file:
+        for index, item in enumerate(file):
             pass
-    return i + 1
+    return index + 1
 
 
 # En funktion som läser indata från FILENAME och sedan skapar objekt av Player
@@ -90,8 +90,8 @@ def createplayers(FILENAME, IGNORELINES, LINES):
     pobject = 0
 
     # Skapar arrays för data. v1 för att hålla objekten och v2 för att hålla attributen
-    v1 = [None] * player_count
-    v2 = [None] * 4
+    array1 = [None] * player_count
+    array2 = [None] * 4
 
     with open(FILENAME, encoding="utf-8") as file:
 
@@ -104,26 +104,26 @@ def createplayers(FILENAME, IGNORELINES, LINES):
             if pelement < 3:
 
                 # Varje rad sparas till element i v2
-                v2[pelement] = line
+                array2[pelement] = line
                 pelement += 1
 
             elif pelement == 3:
 
                 # Sista spelarraden sparas till elementet i v2
-                v2[pelement] = line
+                array2[pelement] = line
 
                 # Beräknar snitt vunna matcher
-                avg = round((int(v2[2]) / int(v2[3])), 3)
+                averagewon = round((int(array2[2]) / int(array2[3])), 3)
 
                 # Spelarobjekt skapas från datan till v1
-                v1[pobject] = Player(v2[0], v2[1], v2[2], v2[3], avg)
+                array1[pobject] = Player(array2[0], array2[1], array2[2], array2[3], averagewon)
 
                 # Nollställer p, ökar s för nästa objekt
                 pelement = 0
                 pobject += 1
 
         # Returnerar lista med spelarobjekt
-        return v1
+        return array1
 
 
 # En funktion för att välja två spelare som skall spela mot varandra
@@ -168,22 +168,22 @@ def playmatch(player1, player2, FILENAME, IGNORELINES, LINES, player):
 
     print("--------------------------------------------\n")
 
-    save(FILENAME, IGNORELINES, LINES, player)
+    savefile(FILENAME, IGNORELINES, LINES, player)
 
 
 # En funktion som raderar gammal och sparar ny data till Spelarlista.txt
-def save(FILENAME, IGNORELINES, LINES, player):
+def savefile(FILENAME, IGNORELINES, LINES, player):
     # Raderar befintlig data (totalt antal rader minus 5 första). Lämnar filen öppen
     oldlines = open(FILENAME).readlines()
     open(FILENAME, 'w').writelines(oldlines[:-(LINES - IGNORELINES)])
 
-    # Skriver ny data
-    for i in player:
+    # Skriver ny data, "a" = append
+    for pobject in player:
         with open(FILENAME, "a", encoding='utf-8') as file:
-            file.write(str(i.name) + '\n')
-            file.write(str(i.serveavg) + '\n')
-            file.write(str(i.won) + '\n')
-            file.write(str(i.played) + '\n')
+            file.write(str(pobject.name) + '\n')
+            file.write(str(pobject.serveavg) + '\n')
+            file.write(str(pobject.won) + '\n')
+            file.write(str(pobject.played) + '\n')
 
 
 # --------- Funktioner för gränssnitt -------------
@@ -195,8 +195,8 @@ def print_resultlist(player):
     print("\n----------------------------------------")
     print("Plac. Namn        Vunna  Spelade  %vunna")
 
-    for i in player:
-        print(plac, i)
+    for pobject in player:
+        print(plac, pobject)
         plac += 1
     print("----------------------------------------")
 
@@ -206,8 +206,8 @@ def print_playerlist(player):
     print("\n----------------------------------------")
     print("Nr. Namn")
 
-    for i in player:
-        print(plac, " ", i.name)
+    for pobject in player:
+        print(plac, " ", pobject.name)
         plac += 1
 
     print("----------------------------------------")
