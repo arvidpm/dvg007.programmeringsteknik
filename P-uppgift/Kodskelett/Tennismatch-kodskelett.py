@@ -27,10 +27,8 @@ class Player:
         return self.name, self.serveavg, self.won, self.played
 
 
-
 # Klassen Match simulerar matcher som spelas och uppdaterar även resultatlistan samt Spelarlista.txt
 class Match:
-
     # En funktion som sköter matchförberedelser
     def preparematch(self, player1, player2):
         return
@@ -44,10 +42,8 @@ class Match:
         return
 
 
-
 # Huvudprogram
 def main():
-
     # Kontroll av filens existens och rimlig indata
     # if FILENAME !EXIST {
     #   sys.exit("Meddelande")
@@ -59,12 +55,10 @@ def main():
 
     # En funktion som läser indata från FILENAME och sedan skapar objekt av Player
     def playerdata(FILENAME):
-
         return
 
         # Whileloopa igenom FILENAME och skapa spelarobjekt baserat på indatan
         # player = Player[indata1, indata2, indata3, indata4]
-
 
     FILENAME = 'Spelarlista.txt'
     match = Match(FILENAME)

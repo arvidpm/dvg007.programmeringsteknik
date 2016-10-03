@@ -18,7 +18,8 @@ import sys, os.path
 from itertools import islice
 from random import randint
 
-#---------- Klass Player som skapar spelarobjekt -----------
+
+# ---------- Klass Player som skapar spelarobjekt -----------
 class Player:
     # Skapar en ny spelare
     def __init__(self, name, serveavg, m_won, m_played, average_won):
@@ -32,11 +33,11 @@ class Player:
     def __str__(self):
         return '    {:15} {:>1} {:>8}   {}'.format(self.name, self.won, self.played, self.averagewon)
 
-#---------- Funktioner för filkontroll, skapande av spelare, matcher, resultatuppdatering ------------
+
+# ---------- Funktioner för filkontroll, skapande av spelare, matcher, resultatuppdatering ------------
 
 # Kontrollerar filens existens
 def checkfile(FILENAME):
-
     if os.path.isfile(FILENAME):
         return
     else:
@@ -53,7 +54,6 @@ def file_len(FILENAME):
 
 # En funktion som läser indata från FILENAME och sedan skapar objekt av Player
 def createplayers(FILENAME, FIRSTLINES):
-
     # Kontrollerar antalet rader i FILENAME
     num_lines = file_len(FILENAME)
 
@@ -61,41 +61,36 @@ def createplayers(FILENAME, FIRSTLINES):
     v = []
 
     with open(FILENAME, encoding="utf-8") as file:
-
         # Loopar igenom data från rad 5 till slutet
         for line in islice(file, FIRSTLINES, num_lines):
-
             line = line.replace('\n', '')
             v.append(line)
 
-        p1avg = round(( int(v[2]) / int(v[3]) ), 3)
-        p2avg = round(( int(v[6]) / int(v[7]) ), 3)
-        p3avg = round(( int(v[10]) / int(v[11]) ), 3)
-        p4avg = round(( int(v[14]) / int(v[15]) ), 3)
+        p1avg = round((int(v[2]) / int(v[3])), 3)
+        p2avg = round((int(v[6]) / int(v[7])), 3)
+        p3avg = round((int(v[10]) / int(v[11])), 3)
+        p4avg = round((int(v[14]) / int(v[15])), 3)
 
-        player= [ Player(v[0], v[1], v[2], v[3], p1avg),
-                Player(v[4], v[5], v[6], v[7], p2avg),
-                Player(v[8], v[9], v[10], v[11], p3avg),
-                Player(v[12], v[13], v[14], v[15], p4avg) ]
+        player = [Player(v[0], v[1], v[2], v[3], p1avg),
+                  Player(v[4], v[5], v[6], v[7], p2avg),
+                  Player(v[8], v[9], v[10], v[11], p3avg),
+                  Player(v[12], v[13], v[14], v[15], p4avg)]
 
         return player
 
 
-
 # En funktion som sköter matchförberedelser
 def playmatch(player1, player2, FILENAME, FIRSTLINES, player):
-
-    player1.played = int(player1.played)+1
-    player2.played = int(player2.played)+1
-
+    player1.played = int(player1.played) + 1
+    player2.played = int(player2.played) + 1
 
     result = randint(0, 1)
 
     if result == 0:
-        player1.won = int(player1.won)+1
+        player1.won = int(player1.won) + 1
         print(player1.name, "won!")
     else:
-        player2.won = int(player2.won)+1
+        player2.won = int(player2.won) + 1
         print(player2.name, "won!")
 
     player1.averagewon = int(player1.won) / int(player1.played)
@@ -126,48 +121,38 @@ def save(FILENAME, FIRSTLINES, player):
 
 
 def testfunction(FILENAME, FIRSTLINES):
-
     # Kontrollerar antalet rader i FILENAME
     num_lines = file_len(FILENAME)
 
     # Antal spelare
-    count = (num_lines - FIRSTLINES)/4
+    count = (num_lines - FIRSTLINES) / 4
 
     # Skapar array med all data från spelarna
     v = [count]
 
     with open(FILENAME, encoding="utf-8") as file:
-
         # Loopar igenom data från rad 5 till slutet
         for line in islice(file, FIRSTLINES, num_lines):
-
             line = line.replace('\n', '')
             v.append(line)
 
+        p1avg = round((int(v[2]) / int(v[3])), 3)
+        p2avg = round((int(v[6]) / int(v[7])), 3)
+        p3avg = round((int(v[10]) / int(v[11])), 3)
+        p4avg = round((int(v[14]) / int(v[15])), 3)
 
-
-        p1avg = round(( int(v[2]) / int(v[3]) ), 3)
-        p2avg = round(( int(v[6]) / int(v[7]) ), 3)
-        p3avg = round(( int(v[10]) / int(v[11]) ), 3)
-        p4avg = round(( int(v[14]) / int(v[15]) ), 3)
-
-        player= [ Player(v[0], v[1], v[2], v[3], p1avg),
-                Player(v[4], v[5], v[6], v[7], p2avg),
-                Player(v[8], v[9], v[10], v[11], p3avg),
-                Player(v[12], v[13], v[14], v[15], p4avg) ]
+        player = [Player(v[0], v[1], v[2], v[3], p1avg),
+                  Player(v[4], v[5], v[6], v[7], p2avg),
+                  Player(v[8], v[9], v[10], v[11], p3avg),
+                  Player(v[12], v[13], v[14], v[15], p4avg)]
 
         return player
-
-
-
-
 
 
 # --------- Funktioner för gränssnitt -------------
 
 
 def print_resultlist(player):
-
     player.sort(key=lambda player: player.averagewon, reverse=True)
 
     plac = 1
@@ -176,23 +161,22 @@ def print_resultlist(player):
 
     for i in player:
         print(plac, i)
-        plac +=1
+        plac += 1
     print("----------------------------------------\n")
 
 
 def print_playerlist(player):
-
     plac = 0
     print("\n----------------------------------------")
     print("Nr. Namn")
 
     for i in player:
-        print(plac," ",i.name)
+        print(plac, " ", i.name)
         plac += 1
+
 
 # Huvudprogram
 def main():
-
     # Refererar textfil till konstant
     FILENAME = '../resources/Spelarlista.txt'
 
@@ -224,7 +208,7 @@ def main():
             if a == b:
                 print("En spelare kan inte spela mot sig själv!")
             else:
-                print("\n"+player[a].name,"vs",player[b].name,"!\n")
+                print("\n" + player[a].name, "vs", player[b].name, "!\n")
                 print("--------------------------------------------\n")
                 playmatch(player[a], player[b], FILENAME, FIRSTLINES, player)
 
