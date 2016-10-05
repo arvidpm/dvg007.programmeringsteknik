@@ -1,27 +1,31 @@
-# # Programmeringsteknik webbkurs KTH inlämningsuppgift P-uppgift
-# Delmoment 3 - Slutinlämning
-
-# Arvid Persson Moosavi
-# 2016-09-25
+# Programmeringsteknik webbkurs KTH inlämningsuppgift P-uppgift
+# Slutinlämning för P-uppgift Tennismatch
 #
-# Detta är deluppgiften kodskelett huvuduppgiften Tennismatch
+# Arvid Persson Moosavi
+# 2016-10-05
 #
 # Programmet fungerar i grova drag så att den läser indata från textfilen Spelarlista.txt
-# Existerar inte filen, eller om data från färra än två spelare finns, så kommer programmet avsluta
-# Sedan skapas spelarobjekt utifrån datan m.h.a. klassen Player och dess konstruktor.
+# I prototypuppgiften kollas inte filen, varken dess existens eller rimlig data.
+# Ingen felkontroll görs utöver att en spelare inte kan spela en match mot sig själv.
 #
-# Spelardatan laddas i main och skickas sedan som inparametrar till klassen Player
-# Klassen Match simulerar en match mellan två spelare, och innehåller en funktion för att uppdatera resultatlistan
+# Programflöde:
+# 1. main anropar createplayers med datafilen Spelarlista.txt.
+# 2. Data läses och spelarobjekt skapas utifrån antalet rader i Spelarlista.txt, 4 rader per spelare.
+# 3. Huvudmeny presenteras. Användaren väljer mellan att visa resultatlista/tillgängliga spelare, eller spela en match.
+# 4. Spelas en match väljer användaren två kombatanter, dessa får inte vara densamma.
+# 5. Matchen spelas, objekten uppdateras och ny data sparas till Spelarlista.txt
+# 6. Laddas resultatlistan på nytt finns ny data tillgänglig sedan förra matchen.
 #
 
-import sys, os.path
+import sys, os.path, time
 from itertools import islice
 from random import randint
 
 
 # ---------- Klass Player som skapar spelarobjekt -----------
 class Player:
-    # Skapar en ny spelare
+
+    # Skapar nytt spelarobjekt
     def __init__(self, name, serveavg, m_won, m_played, average_won):
         self.name = name
         self.serveavg = serveavg
@@ -29,58 +33,136 @@ class Player:
         self.played = m_played
         self.averagewon = average_won
 
-    # Returnerar spelaren med attribut, samt formaterar för resultatlista
+    # Returnerar spelaren med attribut, samt formaterar korrekt för resultatlista
     def __str__(self):
         return '    {:15} {:>1} {:>8}   {}'.format(self.name, self.won, self.played, self.averagewon)
 
 
-# ---------- Funktioner för filkontroll, skapande av spelare, matcher, resultatuppdatering ------------
+# ---------- Funktioner för filkontroll ------------
 
 # Kontrollerar filens existens
 def checkfile(FILENAME):
     if os.path.isfile(FILENAME):
-        return
+        print(FILENAME, "hittad!")
     else:
         sys.exit("Spelarlista.txt kunde inte hämtas")
 
 
+# Funktion för att kontrollerar så varje spelare har fyra rader i FILENAME
+def check_player_lines(IGNORELINES, LINES):
+    playerlines = LINES - IGNORELINES
+
+    if playerlines % 4 == 0:
+        return
+    else:
+        sys.exit("Antalet spelarrader går inte jämnt upp!")
+
+
+# Kontrollerar 1) att vunna matcher inte är fler än spelade, och 2) att vunnen serve inte är högre än 1.
+def check_player_data(player):
+    for pobject in player:
+
+        if int(pobject.won) > int(pobject.played):
+            print("Antalet vunna matcher (" + pobject.won + ") för spelare", pobject.name,
+                  "kan inte vara fler än antalet spelade (" + pobject.played + ") !")
+            sys.exit("Programmet avslutas.")
+        elif float(pobject.serveavg) > float(1):
+            print("Vunnen serve (" + pobject.serveavg + ") för", pobject.name, "kan inte vara större än 1!")
+            sys.exit("Programmet avslutas.")
+
+
+# ---------- Funktioner för skapande av spelare, matcher, resultatuppdatering, spara ny data till fil ------------
+
 # Funktion som kontrollerar antalet rader i textfilen
 def file_len(FILENAME):
-    with open(FILENAME) as f:
-        for i, l in enumerate(f):
+    with open(FILENAME) as file:
+        for index, item in enumerate(file):
             pass
-    return i + 1
+    return index + 1
 
 
 # En funktion som läser indata från FILENAME och sedan skapar objekt av Player
-def createplayers(FILENAME, FIRSTLINES):
-    # Kontrollerar antalet rader i FILENAME
-    num_lines = file_len(FILENAME)
+def createplayers(FILENAME, IGNORELINES, LINES):
+    player_count = int((LINES - IGNORELINES) / 4)
 
-    # Skapar array med all data från spelarna
-    v = []
+    # playerelement, playerobject
+    pelement = 0
+    pobject = 0
+
+    # Skapar arrays för data. v1 för att hålla objekten och v2 för att hålla attributen
+    array1 = [None] * player_count
+    array2 = [None] * 4
 
     with open(FILENAME, encoding="utf-8") as file:
-        # Loopar igenom data från rad 5 till slutet
-        for line in islice(file, FIRSTLINES, num_lines):
+
+        # Loopar igenom data från rad 5 till slutet av textfilen
+        for line in islice(file, IGNORELINES, LINES):
+
+            # Tar bort radbyte
             line = line.replace('\n', '')
-            v.append(line)
 
-        p1avg = round((int(v[2]) / int(v[3])), 3)
-        p2avg = round((int(v[6]) / int(v[7])), 3)
-        p3avg = round((int(v[10]) / int(v[11])), 3)
-        p4avg = round((int(v[14]) / int(v[15])), 3)
+            if pelement < 3:
 
-        player = [Player(v[0], v[1], v[2], v[3], p1avg),
-                  Player(v[4], v[5], v[6], v[7], p2avg),
-                  Player(v[8], v[9], v[10], v[11], p3avg),
-                  Player(v[12], v[13], v[14], v[15], p4avg)]
+                # Varje rad sparas till element i v2
+                array2[pelement] = line
+                pelement += 1
 
-        return player
+            elif pelement == 3:
+
+                # Sista spelarraden sparas till elementet i v2
+                array2[pelement] = line
+
+                # Beräknar snitt vunna matcher
+                averagewon = round((int(array2[2]) / int(array2[3])), 3)
+
+                # Spelarobjekt skapas från datan till v1
+                array1[pobject] = Player(array2[0], array2[1], array2[2], array2[3], averagewon)
+
+                # Nollställer p, ökar s för nästa objekt
+                pelement = 0
+                pobject += 1
+
+        # Returnerar lista med spelarobjekt
+        return array1
 
 
-# En funktion som sköter matchförberedelser
-def playmatch(player1, player2, FILENAME, FIRSTLINES, player):
+# En funktion med lite felkontroll som förbereder en match mellan två spelare
+def selectplayers(FILENAME, IGNORELINES, LINES, player):
+    print_playerlist(player)
+    print()
+    print("Avbryt matchen genom att ange '5' på någon av raderna.\n")
+
+    # Inmatning av spelare
+    p1 = int(input("Välj spelare nr 1: "))
+    p2 = int(input("Välj spelare nr 2: "))
+
+    # Om 5, avbryt matchen
+    if p1 == 5 or p2 == 5:
+        print("\nMatchen avbruten!")
+        return
+
+    # Om spelarnr >=3 så är detta för högt
+    elif p1 >= (player.__len__()-1) or p2 >= (player.__len__()-1):
+        print("\nSpelarnummer kan inte vara högre än "+str((player.__len__()-1)))
+        selectplayers(FILENAME, IGNORELINES, LINES, player)
+
+    elif p1 == p2:
+        print("\nEn spelare kan inte spela mot sig själv!")
+
+    else:
+        print("\n" + player[p1].name)
+        time.sleep(0.5)
+        print("vs")
+        time.sleep(0.5)
+        print(player[p2].name)
+        time.sleep(2)
+
+        print("--------------------------------------------")
+        playmatch(player[p1], player[p2], FILENAME, IGNORELINES, LINES, player)
+
+
+# En funktion som simulerar en match mellan två valda spelare
+def playmatch(player1, player2, FILENAME, IGNORELINES, LINES, player):
     player1.played = int(player1.played) + 1
     player2.played = int(player2.played) + 1
 
@@ -93,65 +175,34 @@ def playmatch(player1, player2, FILENAME, FIRSTLINES, player):
         player2.won = int(player2.won) + 1
         print(player2.name, "won!")
 
-    player1.averagewon = int(player1.won) / int(player1.played)
-    player2.averagewon = int(player2.won) / int(player2.played)
+    player1.averagewon = round((int(player1.won) / int(player1.played)), 3)
+    player2.averagewon = round((int(player2.won) / int(player2.played)), 3)
 
     print("--------------------------------------------\n")
 
-    save(FILENAME, FIRSTLINES, player)
+    savefile(FILENAME, IGNORELINES, LINES, player)
 
 
-# En funktion som sparar ny data till Spelarlista.txt
-def save(FILENAME, FIRSTLINES, player):
-    # Kontrollerar antalet rader i FILENAME
-    num_lines = file_len(FILENAME)
+# En funktion som raderar gammal och sparar ny data till Spelarlista.txt
+def savefile(FILENAME, IGNORELINES, LINES, player):
 
-    # Raderar befintlig data, lämnar filen öppen
+    # Raderar befintlig data (totalt antal rader minus de 5 första). Lämnar filen öppen
     oldlines = open(FILENAME).readlines()
-    open(FILENAME, 'w').writelines(oldlines[:-(num_lines - FIRSTLINES)])
+    open(FILENAME, 'w').writelines(oldlines[:-(LINES - IGNORELINES)])
 
-    # Skriver ny data
-
-    for i in player:
+    # Skriver ny data, "a" = append
+    for pobject in player:
         with open(FILENAME, "a", encoding='utf-8') as file:
-            file.write(str(i.name) + '\n')
-            file.write(str(i.serveavg) + '\n')
-            file.write(str(i.won) + '\n')
-            file.write(str(i.played) + '\n')
-
-
-def testfunction(FILENAME, FIRSTLINES):
-    # Kontrollerar antalet rader i FILENAME
-    num_lines = file_len(FILENAME)
-
-    # Antal spelare
-    count = (num_lines - FIRSTLINES) / 4
-
-    # Skapar array med all data från spelarna
-    v = [count]
-
-    with open(FILENAME, encoding="utf-8") as file:
-        # Loopar igenom data från rad 5 till slutet
-        for line in islice(file, FIRSTLINES, num_lines):
-            line = line.replace('\n', '')
-            v.append(line)
-
-        p1avg = round((int(v[2]) / int(v[3])), 3)
-        p2avg = round((int(v[6]) / int(v[7])), 3)
-        p3avg = round((int(v[10]) / int(v[11])), 3)
-        p4avg = round((int(v[14]) / int(v[15])), 3)
-
-        player = [Player(v[0], v[1], v[2], v[3], p1avg),
-                  Player(v[4], v[5], v[6], v[7], p2avg),
-                  Player(v[8], v[9], v[10], v[11], p3avg),
-                  Player(v[12], v[13], v[14], v[15], p4avg)]
-
-        return player
+            file.write(str(pobject.name) + '\n')
+            file.write(str(pobject.serveavg) + '\n')
+            file.write(str(pobject.won) + '\n')
+            file.write(str(pobject.played) + '\n')
 
 
 # --------- Funktioner för gränssnitt -------------
 
-
+# Utsrift av resultatlista sorterat på spelare från högst till lägst vinstsnitt.
+# Den ordinarie ordningen är från lägst till högst men reverseras genom reverse=True
 def print_resultlist(player):
     player.sort(key=lambda player: player.averagewon, reverse=True)
 
@@ -159,58 +210,68 @@ def print_resultlist(player):
     print("\n----------------------------------------")
     print("Plac. Namn        Vunna  Spelade  %vunna")
 
-    for i in player:
-        print(plac, i)
+    for pobject in player:
+        print(plac, pobject)
         plac += 1
-    print("----------------------------------------\n")
+    print("----------------------------------------")
 
-
+# Utskrit av spelarlista, utan sortering, tagna i samma ordning som de listas i textfilen
 def print_playerlist(player):
     plac = 0
     print("\n----------------------------------------")
     print("Nr. Namn")
 
-    for i in player:
-        print(plac, " ", i.name)
+    for pobject in player:
+        print(plac, " ", pobject.name)
         plac += 1
 
+    print("----------------------------------------")
 
-# Huvudprogram
+
+# --------- Huvudprogrammet -----------------------
+
 def main():
     # Refererar textfil till konstant
     FILENAME = '../resources/Spelarlista.txt'
 
-    # Kontrollerar om filen finns
+    # Kontrollerar att filen finns
     checkfile(FILENAME)
 
-    # Konstant för första raderna i textfilen
-    FIRSTLINES = 5
+    # Konstant för att ignorera första raderna i FILENAME
+    IGNORELINES = 5
 
-    # Skapar spelarobjekt
-    player = createplayers(FILENAME, FIRSTLINES)
+    # Kontrollerar antalet rader i FILENAME
+    LINES = file_len(FILENAME)
 
-    # Sparar ny data till textfilen
-    # save(FILENAME, FIRSTLINES, player)
+    # Kontrollerar att varje spelare i FILENAME har fyra rader
+    check_player_lines(IGNORELINES, LINES)
 
-    # playmatch(player[0], player[1])
+    # Skapar spelarobjekt från data i textfilen
+    player = createplayers(FILENAME, IGNORELINES, LINES)
 
-    # Huvudmenyn
-    choice = input("\nVälkommen!\n\n1. Spela match\n2. Visa spelare\n3. Visa resultat\n\nGör ditt val: ")
+    # Kontrollerar rimlig spelardata
+    check_player_data(player)
+
+    # --------- Huvudmenyn -----------------------
+
+    print()
+    print('   ,odOO"bo,')
+    print(" ,dOOOP'dOOOb,")
+    print(",O3OP'dOO3OO33,")
+    print('P",ad33O333O3Ob')
+    print('?833O338333P",d')
+    print("`88383838P,d38'")
+    print(" `Y8888P,d88P'")
+    print('   `"?8,8P"'"")
+    print()
+
+    choice = input(
+        "Välkommen till Tennisspelet!\n\n1. Spela match\n2. Visa spelare\n3. Visa resultat\n\n5. Avsluta\n\nGör ditt val: ")
 
     while choice:
 
         if choice[0] == "1":
-            print_playerlist(player)
-            print("\n")
-
-            a = int(input("Välj spelare nr 1: "))
-            b = int(input("Välj spelare nr 2: "))
-            if a == b:
-                print("En spelare kan inte spela mot sig själv!")
-            else:
-                print("\n" + player[a].name, "vs", player[b].name, "!\n")
-                print("--------------------------------------------\n")
-                playmatch(player[a], player[b], FILENAME, FIRSTLINES, player)
+            selectplayers(FILENAME, IGNORELINES, LINES, player)
 
         elif choice[0] == "2":
             print_playerlist(player)
@@ -227,13 +288,7 @@ def main():
 
         print()
 
-        choice = input("\n1. Spela match\n2. Visa spelare\n3. Visa resultat\n\nGör ditt val: ")
+        choice = input("\n1. Spela match\n2. Visa spelare\n3. Visa resultat\n\n5. Avsluta\n\nGör ditt val: ")
 
-
-# Meny för val av händelser
-# choice = '';
-# while choice != 'S':
-#       Välj två spelare som ska gå en match
-#
 
 main()
