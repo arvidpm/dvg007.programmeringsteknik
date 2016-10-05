@@ -143,12 +143,18 @@ def selectplayers(FILENAME, IGNORELINES, LINES, player):
 
     # Om spelarnr >=3 så är detta för högt
     elif p1 >= (player.__len__()-1) or p2 >= (player.__len__()-1):
-        print("\nSpelarnummer kan inte vara högre än "+str((player.__len__()-1)))
+        print("\nSpelarnummer måste vara mellan 0 och "+str((player.__len__()-1)))
         selectplayers(FILENAME, IGNORELINES, LINES, player)
 
+    elif p1 <0 or p2 <0:
+        print("\nInga negativa spelarnummer!")
+        selectplayers(FILENAME, IGNORELINES, LINES, player)
+
+    # p1 != p2
     elif p1 == p2:
         print("\nEn spelare kan inte spela mot sig själv!")
 
+    # Fancy presentation
     else:
         print("\n" + player[p1].name)
         time.sleep(0.5)
