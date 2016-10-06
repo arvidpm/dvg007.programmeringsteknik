@@ -13,6 +13,7 @@
 # 2. Data läses och spelarobjekt skapas utifrån antalet rader i Spelarlista.txt, 4 rader per spelare.
 # 3. Huvudmeny presenteras. Användaren väljer mellan att visa resultatlista/tillgängliga spelare, eller spela en match.
 # 4. Spelas en match väljer användaren två kombatanter, dessa får inte vara densamma.
+#    Dessa får heller inte vara mindre än 0, större än 3 (egentligen antalet spelarobjekt), eller 5 = avbryt matchen.
 # 5. Matchen spelas, objekten uppdateras och ny data sparas till Spelarlista.txt
 # 6. Laddas resultatlistan på nytt finns ny data tillgänglig sedan förra matchen.
 #
@@ -141,8 +142,9 @@ def selectplayers(FILENAME, IGNORELINES, LINES, player):
         print("\nMatchen avbruten!")
         return
 
-    # Om spelarnr >=3 så är detta för högt
-    elif p1 >= (player.__len__()-1) or p2 >= (player.__len__()-1):
+    # Om spelarnr >=3 så är detta för högt.
+    # __len__ returnerar längden av listan, vilket blir 4. Men vi vill endast välja 0-3 (elementen), därav '-1'.
+    elif p1 > (player.__len__()-1) or p2 > (player.__len__()-1):
         print("\nSpelarnummer måste vara mellan 0 och "+str((player.__len__()-1)))
         selectplayers(FILENAME, IGNORELINES, LINES, player)
 
